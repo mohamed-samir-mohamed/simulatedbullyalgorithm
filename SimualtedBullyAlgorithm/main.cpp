@@ -15,9 +15,11 @@ int main()
    }
 
    double t = time(0);
+   
    while(true)
    {
-       for (int i = 0; i < 10 ; i++)
+       int size = nodeVector.size(); 
+       for (int i = 0; i < size ; i++)
        {
            nodeVector[i]->update();
        }
@@ -26,7 +28,7 @@ int main()
        {
            nodeVector.pop_back();
            MessageRouter::removeHandler(9);
-           now = 0; t = 0;
+           t = time(0);
        }
    }
 
