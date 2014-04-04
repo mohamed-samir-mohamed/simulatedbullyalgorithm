@@ -7,6 +7,8 @@
 
 #define  InvalidValue -1
 
+#define ManagerID -3
+
 typedef long long ID;
 
 #endif // !GENERALDEFINATIONS_H

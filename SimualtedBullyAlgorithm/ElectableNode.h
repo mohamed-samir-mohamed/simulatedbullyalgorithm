@@ -16,6 +16,7 @@ public:
    ElectableNode(ID fID);
    virtual ~ElectableNode();
    ID getID() const;
+   ID getCoordinatorID() const;
    virtual void handleMessage(Message* fMessage);
    virtual void update();
 

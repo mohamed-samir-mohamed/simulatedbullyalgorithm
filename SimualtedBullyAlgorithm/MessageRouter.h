@@ -19,6 +19,6 @@ public:
    static void sendMessageTo(Message* fMessage, ID fRecieverID);
 
 private:
-   static map<ID, std::unique_ptr<IMessageHandler>>  mHandlersMap;
+   static map<ID, IMessageHandler*>  mHandlersMap;
 };
 #endif // !MESSAGEROUTER_H

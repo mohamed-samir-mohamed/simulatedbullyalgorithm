@@ -5,7 +5,7 @@
 
 void MessageRouter::addHandler(IMessageHandler* fHandler )
 {
-    mHandlersMap[fHandler->getID()] = std::unique_ptr<IMessageHandler>(fHandler);
+    mHandlersMap[fHandler->getID()] = fHandler;
 }
 
 void MessageRouter::removeHandler( ID fID )
@@ -20,7 +20,10 @@ void MessageRouter::broadCastMessage( Message* fMessage )
         //broad cast message for all handlers except the sender itself && the message is not handled.
         if (it->second->getID() != fMessage->getSenderID() && fMessage->isMessageHandled() == false)
         {
-            it->second->handleMessage(fMessage);
+            if (it->second != nullptr)
+            {
+                 it->second->handleMessage(fMessage);
+            }
         }
     }
 } 
@@ -29,8 +32,11 @@ void MessageRouter::sendMessageTo( Message* fMessage, ID fRecieverID )
 {
    if(mHandlersMap.find(fRecieverID) != mHandlersMap.end())
    {
-       mHandlersMap[fRecieverID]->handleMessage(fMessage);
+       if (mHandlersMap[fRecieverID] != nullptr)
+       {
+           mHandlersMap[fRecieverID]->handleMessage(fMessage);
+       }
    }
 }
 
-map<ID, std::unique_ptr<IMessageHandler>> MessageRouter::mHandlersMap;
+map<ID, IMessageHandler*> MessageRouter::mHandlersMap;
