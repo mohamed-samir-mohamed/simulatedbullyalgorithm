@@ -11,11 +11,11 @@ int main()
    {
        node = new ElectableNode();
        nodeVector.push_back(node);
-       MessageRouter::addHandler(node->getID(), node);
+       MessageRouter::addHandler(node);
    }
 
    double t = time(0);
-   
+   int handler = 9;
    while(true)
    {
        int size = nodeVector.size(); 
@@ -26,9 +26,13 @@ int main()
        double now = time(0);
        if (now - t > 10 )
        {
-           nodeVector.pop_back();
-           MessageRouter::removeHandler(9);
-           t = time(0);
+           if (nodeVector.size() > 1)
+           {
+               nodeVector.pop_back();
+               MessageRouter::removeHandler(handler);
+               handler --;
+               t = time(0);
+           }
        }
    }
 

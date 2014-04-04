@@ -3,9 +3,9 @@
 #include "Message.h"
 
 
-void MessageRouter::addHandler( ID fID, IMessageHandler* fHandler )
+void MessageRouter::addHandler(IMessageHandler* fHandler )
 {
-    mHandlersMap[fID] = std::unique_ptr<IMessageHandler>(fHandler);
+    mHandlersMap[fHandler->getID()] = std::unique_ptr<IMessageHandler>(fHandler);
 }
 
 void MessageRouter::removeHandler( ID fID )

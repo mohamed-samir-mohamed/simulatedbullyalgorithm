@@ -13,7 +13,7 @@ class IMessageHandler;
 class MessageRouter
 {
 public:
-   static void addHandler(ID fID, IMessageHandler* fHandler);
+   static void addHandler(IMessageHandler* fHandler);
    static void removeHandler(ID fID);
    static void broadCastMessage(Message* fMessage);
    static void sendMessageTo(Message* fMessage, ID fRecieverID);

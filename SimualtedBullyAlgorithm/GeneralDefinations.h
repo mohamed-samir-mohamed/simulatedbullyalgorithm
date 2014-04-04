@@ -1,9 +1,9 @@
 #ifndef GENERALDEFINATIONS_H
 #define GENERALDEFINATIONS_H
 
-#define  timeStampLimit  1.0f //1 sec.
+#define  timeStampLimit  2.0f //2 seconds.
 
-#define  TimeOutLimit  0.5f //halfSecond.
+#define  TimeOutLimit  0.1f //1 Second.
 
 #define  InvalidValue -1
 
