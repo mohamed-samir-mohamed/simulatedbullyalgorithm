@@ -3,23 +3,48 @@
 #include "MessageRouter.h"
 #include <windowsx.h>
 #include <string>
+#include <io.h>
+#include <fcntl.h>
 
 /*global definitions*/
+
+//each instance of this application composes a node class to handle the logic.
 ElectableNode node;
+//handle window for the text label in the window.
 HWND hWndEdit = NULL;
-#define CoordinatorIDText 1
 
-LPCWSTR displayMessage;
-
+//callback to handle the messages sent to this window.
 LRESULT CALLBACK windowProc(HWND hnwd, UINT uMsg, WPARAM wParam, LPARAM lParam);
+
+// method for handling the received  message.
 BOOL OnCopyData(HWND hWnd, HWND hwndFrom, PCOPYDATASTRUCT pcds);
 
+//Application entry point.
 int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE, PWSTR cmdLine,int cmdShow)
 {
+#pragma region creating console and enable it.
+    AllocConsole();
+    HANDLE handle_out = GetStdHandle(STD_OUTPUT_HANDLE);
+    int hCrt = _open_osfhandle((long) handle_out, _O_TEXT);
+    FILE* hf_out = _fdopen(hCrt, "w");
+    setvbuf(hf_out, NULL, _IONBF, 1);
+    *stdout = *hf_out;
 
+    HANDLE handle_in = GetStdHandle(STD_INPUT_HANDLE);
+    hCrt = _open_osfhandle((long) handle_in, _O_TEXT);
+    FILE* hf_in = _fdopen(hCrt, "r");
+    setvbuf(hf_in, NULL, _IONBF, 128);
+    *stdin = *hf_in;
+#pragma endregion
+
+    //create a unique ID for communicating between processes.
     MessageRouter::BROADCAST_MESSAGE_ID = RegisterWindowMessage(L"BullyAlgorithmBroadCastMessage");
 
+    //I assume that the ID for the process will be sent to this process through command line.
     node.setID(_wtoi64(cmdLine));
+
+#pragma region create main window and text menu.
+
     const wchar_t CLASS_NAME[] = L"windowClass";
 
     WNDCLASS wc = {};
@@ -33,11 +58,18 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE, PWSTR cmdLine,int cmdShow)
     MessageRouter::Hwnd = hwnd;
     if (hwnd == 0)
         return 0;
-    hWndEdit = CreateWindowEx(WS_EX_CLIENTEDGE, TEXT("Edit"), TEXT(""), WS_CHILD | WS_VISIBLE , 0, 0, 140, 100, hwnd,(HMENU) CoordinatorIDText, NULL, NULL);
+
+    ChangeWindowMessageFilterEx(hwnd, MessageRouter::BROADCAST_MESSAGE_ID , MSGFLT_ALLOW, NULL);
+
+    //
+    hWndEdit = CreateWindowEx(WS_EX_CLIENTEDGE, TEXT("Edit"), TEXT(""), WS_CHILD | WS_VISIBLE , 0, 0, 140, 100, hwnd,(HMENU) 1, NULL, NULL);
 
     ShowWindow(hwnd, cmdShow);
     UpdateWindow(hwnd);
     cmdShow = 1;
+
+#pragma endregion
+    //enable this window to handle message defined above.
 
     MSG msg = {};
 
@@ -52,21 +84,12 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE, PWSTR cmdLine,int cmdShow)
 }
 
 LRESULT CALLBACK windowProc(HWND hnwd, UINT uMsg, WPARAM wParam, LPARAM lParam)
-{
-   
-    if (uMsg == MessageRouter::BROADCAST_MESSAGE_ID)
-    {
-         OnCopyData(hnwd, (HWND) wParam, (PCOPYDATASTRUCT) lParam);
-         SetWindowText(hWndEdit, to_wstring(node.getCoordinatorID()).c_str());
-         ReplyMessage(TRUE);
-    }
-
+{ 
     switch(uMsg)
     {
     case WM_COPYDATA:
-        OnCopyData(hnwd, (HWND) wParam, (PCOPYDATASTRUCT) lParam);
         SetWindowText(hWndEdit,  to_wstring(node.getCoordinatorID()).c_str());
-        ReplyMessage(TRUE);
+        ReplyMessage(OnCopyData(hnwd, (HWND) wParam, reinterpret_cast<PCOPYDATASTRUCT>(lParam)));
         break;
     case WM_DESTROY:
         PostQuitMessage(0);
@@ -89,6 +112,11 @@ LRESULT CALLBACK windowProc(HWND hnwd, UINT uMsg, WPARAM wParam, LPARAM lParam)
         }
         return 0;
     }
+    if (uMsg == MessageRouter::BROADCAST_MESSAGE_ID)
+    {
+        SetWindowText(hWndEdit, to_wstring(node.getCoordinatorID()).c_str());
+        ReplyMessage(OnCopyData(hnwd, (HWND) wParam, reinterpret_cast<PCOPYDATASTRUCT>(lParam)));
+    }
 
     return DefWindowProc(hnwd,uMsg,wParam,lParam);
 }
@@ -97,16 +125,10 @@ BOOL OnCopyData(HWND hWnd, HWND hwndFrom, PCOPYDATASTRUCT pcds)
 {
     Message receivedMessage;
     // If the size matches
-    if (pcds == NULL)
+    if (pcds->cbData == sizeof(receivedMessage)) 
     {
-        return FALSE;
-    }
-    if (pcds->cbData == sizeof(receivedMessage))
-    {    
         memcpy_s(&receivedMessage, sizeof(receivedMessage), pcds->lpData, pcds->cbData);
+        node.handleMessage(receivedMessage);
+         return TRUE;
     }
-     
-    node.handleMessage(receivedMessage);
-
-    return TRUE;
 }

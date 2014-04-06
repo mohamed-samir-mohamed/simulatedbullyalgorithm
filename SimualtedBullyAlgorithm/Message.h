@@ -1,9 +1,11 @@
 #ifndef MESSAGE_H
 #define MESSAGE_H
 #include "GeneralDefinations.h"
-
+#include <string>
+using namespace std;
 struct Message
 {
+    //this is the message structure.
 public:
     enum MessageType
     {
@@ -15,7 +17,10 @@ public:
     };
     Message();
     Message(MessageType fType, ID fSenderID);
+
+    //data...
     MessageType type;
+    string getStringMessage();
     ID senderID;
     bool isHandled;
 };

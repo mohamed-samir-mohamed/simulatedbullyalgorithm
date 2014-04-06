@@ -80,14 +80,12 @@
     <ClInclude Include="MessageInterfaces.h" />
     <ClInclude Include="Message.h" />
     <ClInclude Include="MessageRouter.h" />
-    <ClInclude Include="NodesManager.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ElectableNode.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Message.cpp" />
     <ClCompile Include="MessageRouter.cpp" />
-    <ClCompile Include="NodesManager.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
