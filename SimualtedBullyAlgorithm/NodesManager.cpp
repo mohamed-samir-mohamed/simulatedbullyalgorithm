@@ -22,7 +22,7 @@ NodesManager::~NodesManager()
 void NodesManager::addNode( ElectableNode* fNode )
 {
     mNodes[fNode->getID()] = fNode;
-    MessageRouter::addHandler(fNode);
+    MessageRouter::addHandler(fNode->getID());
 }
 
 void NodesManager::deleteNode( ID fID )

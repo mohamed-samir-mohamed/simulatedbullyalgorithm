@@ -1,42 +1,46 @@
 #include "MessageRouter.h"
 #include "MessageInterfaces.h"
 #include "Message.h"
+#include <string>
+#include <algorithm>
+#include "GeneralDefinations.h"
 
-
-void MessageRouter::addHandler(IMessageHandler* fHandler )
+void MessageRouter::addHandler(ID fHandlerID )
 {
-    mHandlersMap[fHandler->getID()] = fHandler;
+    mHandlersList.push_back(fHandlerID);
 }
 
 void MessageRouter::removeHandler( ID fID )
 {
-    mHandlersMap.erase(fID);
+    std::remove(mHandlersList.begin(),mHandlersList.end(), fID);
 }
 
-void MessageRouter::broadCastMessage( Message* fMessage )
+void MessageRouter::broadCastMessage( Message fMessage )
 {
-    for (auto it = mHandlersMap.begin(); it != mHandlersMap.end(); it++)
-    {
-        //broad cast message for all handlers except the sender itself && the message is not handled.
-        if (it->second->getID() != fMessage->getSenderID() && fMessage->isMessageHandled() == false)
-        {
-            if (it->second != nullptr)
-            {
-                 it->second->handleMessage(fMessage);
-            }
-        }
-    }
+        COPYDATASTRUCT cds;
+        cds.cbData = sizeof(fMessage);
+        cds.lpData = &fMessage;
+
+        SendMessage(HWND_BROADCAST, BROADCAST_MESSAGE_ID, reinterpret_cast<WPARAM>(Hwnd), 
+            reinterpret_cast<LPARAM>(&cds));
 } 
 
-void MessageRouter::sendMessageTo( Message* fMessage, ID fRecieverID )
-{
-   if(mHandlersMap.find(fRecieverID) != mHandlersMap.end())
-   {
-       if (mHandlersMap[fRecieverID] != nullptr)
-       {
-           mHandlersMap[fRecieverID]->handleMessage(fMessage);
-       }
-   }
+void MessageRouter::sendMessageTo( Message fMessage, ID fRecieverID )
+ {
+     HWND hTargetWnd = FindWindow(NULL, to_wstring(fRecieverID).c_str());
+     if (hTargetWnd != NULL)
+     {
+         COPYDATASTRUCT cds;
+         cds.cbData = sizeof(fMessage);
+         cds.lpData = &fMessage;
+
+         SendMessage(hTargetWnd, WM_COPYDATA, reinterpret_cast<WPARAM>(Hwnd), 
+             reinterpret_cast<LPARAM>(&cds));
+     }
 }
 
-map<ID, IMessageHandler*> MessageRouter::mHandlersMap;
+UINT MessageRouter::BROADCAST_MESSAGE_ID;
+
+HWND MessageRouter::Hwnd;
+
+list<ID> MessageRouter::mHandlersList;

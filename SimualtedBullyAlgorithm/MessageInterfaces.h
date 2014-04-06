@@ -7,7 +7,8 @@ class Message;
 class IMessageHandler
 {
 public:
-   virtual void handleMessage(Message* fMessage) = 0;
+   virtual void handleMessage(Message fMessage) = 0;
    virtual ID getID() const = 0;
+   virtual void setID(ID) = 0;
 };
 #endif //! MESSAGEINTERFACES_H

@@ -13,12 +13,19 @@ ElectableNode::ElectableNode() : mCurrentState(NONE)
     mPickedTimeRequestElection = InvalidValue;
     mPreviousIntervalTime = InvalidValue;
     mPickedTimeAtChekingCoordinator = InvalidValue;
-    mMessageToFire = nullptr;
+}
+
+ElectableNode::ElectableNode( ID fID ): mCurrentState(NONE)
+{
+    mID = fID;
+    mCoordinatorID = InvalidValue;
+    mPickedTimeRequestElection = InvalidValue;
+    mPreviousIntervalTime = InvalidValue;
+    mPickedTimeAtChekingCoordinator = InvalidValue;
 }
 
 ElectableNode::~ElectableNode()
 {
-    delete mMessageToFire;
 }
 
 ID ElectableNode::getID() const
@@ -32,32 +39,33 @@ void ElectableNode::RequestElection()
 
     mPickedTimeRequestElection = time(0);
     mCurrentState = WAITING_ELECTION_RESPOND;
-    prepareMessageToFire(Message::ELECTION_REQUEST);
-    MessageRouter::broadCastMessage(mMessageToFire);
+    Message message(Message::ELECTION_REQUEST, mID);
+    MessageRouter::broadCastMessage(message);
 }
 
-void ElectableNode::handleMessage( Message* fMessage )
+void ElectableNode::handleMessage( Message fMessage )
 {
+    Message responseMessage;
+    responseMessage.senderID = mID;
 
-    switch (fMessage->getType())
+    switch (fMessage.type)
     {
     case  Message::I_AM_JUST_CHECKING_COORDINATOR:
         if (mCurrentState == COORDIATOR)
         {
-            fMessage->setHandled();
-            prepareMessageToFire(Message::I_AM_STILL_ALIVE);
-            MessageRouter::sendMessageTo(mMessageToFire ,fMessage->getSenderID());
+           responseMessage.type = Message::I_AM_STILL_ALIVE;
+           MessageRouter::sendMessageTo(responseMessage, fMessage.senderID);
         }
         break;
     case  Message::I_AM_THE_COORDINATOR:
-        mCoordinatorID = fMessage->getSenderID();
+        mCoordinatorID = fMessage.senderID;
         mCurrentState = NONE;
         break;
     case  Message::ELECTION_REQUEST:
-        if (fMessage->getSenderID() < mID)
-        {
-            prepareMessageToFire(Message::I_AM_GREATER_THAN_YOU);
-            MessageRouter::sendMessageTo(mMessageToFire, fMessage->getSenderID());
+        if (fMessage.senderID < mID)
+        {     
+            responseMessage.type = Message::I_AM_GREATER_THAN_YOU;
+            MessageRouter::sendMessageTo(responseMessage, fMessage.senderID);
             RequestElection();
         }
         break;
@@ -106,26 +114,23 @@ void ElectableNode::setAsCoordinator()
     cout<<"Current Coordinator    "<< mID <<endl;
     mCurrentState = COORDIATOR;
     mCoordinatorID = mID;
-    prepareMessageToFire(Message::I_AM_THE_COORDINATOR);
-    MessageRouter::broadCastMessage(mMessageToFire);
-}
-
-void ElectableNode::prepareMessageToFire( Message::MessageType fType, void* fData /*= nullptr*/ )
-{
-    if (mMessageToFire)
-        delete mMessageToFire;
-
-    mMessageToFire = new Message(fType, mID, fData);
+    Message message(Message::I_AM_THE_COORDINATOR,mID);
+    MessageRouter::broadCastMessage(message);
 }
 
 void ElectableNode::checkCoordinator()
 {
     mCurrentState = CHECKING_COORINATOR;
-    prepareMessageToFire(Message::I_AM_JUST_CHECKING_COORDINATOR);
-    MessageRouter::sendMessageTo(mMessageToFire, mCoordinatorID);
+    Message message(Message::I_AM_JUST_CHECKING_COORDINATOR, mID);
+    MessageRouter::sendMessageTo(message, mCoordinatorID);
 }
 
 ID ElectableNode::getCoordinatorID() const
 {
     return mCoordinatorID;
+}
+
+void ElectableNode::setID( ID fID )
+{
+    mID = fID;
 }

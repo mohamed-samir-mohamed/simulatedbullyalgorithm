@@ -17,7 +17,8 @@ public:
    virtual ~ElectableNode();
    ID getID() const;
    ID getCoordinatorID() const;
-   virtual void handleMessage(Message* fMessage);
+   void setID(ID fID);
+   virtual void handleMessage(Message fMessage);
    virtual void update();
 
 protected:
@@ -30,12 +31,10 @@ protected:
 
 
     void RequestElection();
-    void prepareMessageToFire(Message::MessageType fType, void* fData = nullptr);
     void checkCoordinator();
     void setAsCoordinator();
 
 private:
-    Message* mMessageToFire;
     static ID CurrentUniqueID;
 };
 

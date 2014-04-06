@@ -3,7 +3,7 @@
 
 #define  timeStampLimit  2.0f //2 seconds.
 
-#define  TimeOutLimit  0.1f //1 Second.
+#define  TimeOutLimit  1.0f //1 Second.
 
 #define  InvalidValue -1
 
