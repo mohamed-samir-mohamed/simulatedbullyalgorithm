@@ -41,7 +41,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE, PWSTR cmdLine,int cmdShow)
 #pragma endregion
 
     //create a unique ID for communicating between processes.
-    MessageRouter::BROADCAST_MESSAGE_ID = RegisterWindowMessage(L"BullyAlgorithmBroadCastMessage");
+    MessageRouter::UNIQUE_MESSAGE_ID = RegisterWindowMessage(L"BullyAlgorithmBroadCastMessage");
 
 	cout <<"enter the ID for this Process  (Hint !!)--> uniqueness must be guaranteed by you"<<endl;
 	ID iD;
@@ -71,7 +71,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE, PWSTR cmdLine,int cmdShow)
 #pragma endregion
 
 	//enable this window to handle message defined above.
-	ChangeWindowMessageFilterEx(hwnd, MessageRouter::BROADCAST_MESSAGE_ID , MSGFLT_ALLOW, NULL);
+	ChangeWindowMessageFilterEx(hwnd, MessageRouter::UNIQUE_MESSAGE_ID , MSGFLT_ALLOW, NULL);
 
     MSG msg = {};
 
@@ -89,10 +89,6 @@ LRESULT CALLBACK windowProc(HWND hnwd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 { 
     switch(uMsg)
     {
-    case WM_COPYDATA:
-        SetWindowText(hWndEdit,  to_wstring(node.getCoordinatorID()).c_str());
-        ReplyMessage(OnCopyData(hnwd, (HWND) wParam, reinterpret_cast<PCOPYDATASTRUCT>(lParam)));
-        break;
     case WM_DESTROY:
         PostQuitMessage(0);
         exit(0);
@@ -114,7 +110,7 @@ LRESULT CALLBACK windowProc(HWND hnwd, UINT uMsg, WPARAM wParam, LPARAM lParam)
         }
         return 0;
     }
-    if (uMsg == MessageRouter::BROADCAST_MESSAGE_ID)
+    if (uMsg == MessageRouter::UNIQUE_MESSAGE_ID)
     {
         SetWindowText(hWndEdit, to_wstring(node.getCoordinatorID()).c_str());
         ReplyMessage(OnCopyData(hnwd, (HWND) wParam, reinterpret_cast<PCOPYDATASTRUCT>(lParam)));

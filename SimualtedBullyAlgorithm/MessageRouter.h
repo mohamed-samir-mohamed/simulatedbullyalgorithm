@@ -27,7 +27,7 @@ public:
 	PCOPYDATASTRUCT mCopyStructure;//structure to be sent.
 
 	static HWND Hwnd;//handle for the main window of this process
-	static UINT BROADCAST_MESSAGE_ID;//unique ID for communicating between processes -- throw RegisterWindowMessage() method.
+	static UINT UNIQUE_MESSAGE_ID;//unique ID for communicating between processes -- throw RegisterWindowMessage() method.
 
 };
 #endif // !MESSAGEROUTER_H
