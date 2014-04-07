@@ -13,6 +13,7 @@ Message::Message()
 
 string Message::getStringMessage()
 {
+	//stringfy the message type for log information.
     switch(type)
     {
     case I_AM_GREATER_THAN_YOU:
@@ -26,4 +27,5 @@ string Message::getStringMessage()
     case I_AM_THE_COORDINATOR:
         return " -- I am the coordinator -- ";
     }
+	return "";
 }

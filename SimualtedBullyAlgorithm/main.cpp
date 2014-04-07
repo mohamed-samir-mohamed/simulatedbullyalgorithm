@@ -1,15 +1,18 @@
 ﻿#include <Windows.h>
-#include "ElectableNode.h"
-#include "MessageRouter.h"
 #include <windowsx.h>
 #include <string>
 #include <io.h>
 #include <fcntl.h>
+#include <iostream>
+
+#include "ElectableNode.h"
+#include "MessageRouter.h"
+#include <winuser.h>
 
 /*global definitions*/
-
 //each instance of this application composes a node class to handle the logic.
 ElectableNode node;
+
 //handle window for the text label in the window.
 HWND hWndEdit = NULL;
 
@@ -40,8 +43,10 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE, PWSTR cmdLine,int cmdShow)
     //create a unique ID for communicating between processes.
     MessageRouter::BROADCAST_MESSAGE_ID = RegisterWindowMessage(L"BullyAlgorithmBroadCastMessage");
 
-    //I assume that the ID for the process will be sent to this process through command line.
-    node.setID(_wtoi64(cmdLine));
+	cout <<"enter the ID for this Process  (Hint !!)--> uniqueness must be guaranteed by you"<<endl;
+	ID iD;
+	cin>>iD;
+    node.setID(iD);
 
 #pragma region create main window and text menu.
 
@@ -54,22 +59,19 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE, PWSTR cmdLine,int cmdShow)
     wc.hInstance = hInstance;
     RegisterClass(&wc);
 
-    HWND hwnd = CreateWindowEx(0, CLASS_NAME, cmdLine, WS_OVERLAPPEDWINDOW, 0, 0, 150, 110, NULL, NULL, hInstance, NULL);
+    HWND hwnd = CreateWindowEx(0, CLASS_NAME, to_wstring(iD).c_str(), WS_OVERLAPPEDWINDOW, 0, 0, 150, 110, NULL, NULL, hInstance, NULL);
     MessageRouter::Hwnd = hwnd;
     if (hwnd == 0)
         return 0;
-
-    ChangeWindowMessageFilterEx(hwnd, MessageRouter::BROADCAST_MESSAGE_ID , MSGFLT_ALLOW, NULL);
-
-    //
     hWndEdit = CreateWindowEx(WS_EX_CLIENTEDGE, TEXT("Edit"), TEXT(""), WS_CHILD | WS_VISIBLE , 0, 0, 140, 100, hwnd,(HMENU) 1, NULL, NULL);
 
     ShowWindow(hwnd, cmdShow);
     UpdateWindow(hwnd);
     cmdShow = 1;
-
 #pragma endregion
-    //enable this window to handle message defined above.
+
+	//enable this window to handle message defined above.
+	ChangeWindowMessageFilterEx(hwnd, MessageRouter::BROADCAST_MESSAGE_ID , MSGFLT_ALLOW, NULL);
 
     MSG msg = {};
 
@@ -124,11 +126,8 @@ LRESULT CALLBACK windowProc(HWND hnwd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 BOOL OnCopyData(HWND hWnd, HWND hwndFrom, PCOPYDATASTRUCT pcds)
 {
     Message receivedMessage;
-    // If the size matches
-    if (pcds->cbData == sizeof(receivedMessage)) 
-    {
-        memcpy_s(&receivedMessage, sizeof(receivedMessage), pcds->lpData, pcds->cbData);
-        node.handleMessage(receivedMessage);
-         return TRUE;
-    }
+	//memcpy_s(&receivedMessage, sizeof(receivedMessage), pcds->lpData, pcds->cbData);
+	receivedMessage = *((Message*) pcds->lpData);
+	node.handleMessage(receivedMessage);
+	return true;
 }

@@ -14,17 +14,20 @@ class IMessageHandler;
 
 class MessageRouter
 {
-
     /************************************************************************/
     /* this class is responsible for sending messages between nodes (processes) 
     /************************************************************************/
 public:
-   static void broadCastMessage(Message fMessage);
-   static void sendMessageTo( Message fMessage, ID fRecieverID);
+	MessageRouter();
+	~MessageRouter();
+	void broadCastMessage(Message fMessage);
+	void sendMessageTo( Message fMessage, ID fRecieverID);
 
-   static UINT BROADCAST_MESSAGE_ID;//unique ID for communicating between processes -- throw RegisterWindowMessage() method.
-   static HWND Hwnd;//handle for the main window of this process
-   static Message MessageToBeSent;//static message to be sent.
-   static COPYDATASTRUCT mCopyStructure;//static structure to be sent.
+	Message* MessageToBeSent;// message to be sent.
+	PCOPYDATASTRUCT mCopyStructure;//structure to be sent.
+
+	static HWND Hwnd;//handle for the main window of this process
+	static UINT BROADCAST_MESSAGE_ID;//unique ID for communicating between processes -- throw RegisterWindowMessage() method.
+
 };
 #endif // !MESSAGEROUTER_H

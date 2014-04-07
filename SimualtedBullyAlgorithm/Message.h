@@ -15,13 +15,14 @@ public:
         I_AM_THE_COORDINATOR, 
         I_AM_GREATER_THAN_YOU
     };
+
     Message();
     Message(MessageType fType, ID fSenderID);
+	string getStringMessage();
 
     //data...
-    MessageType type;
-    string getStringMessage();
     ID senderID;
+	MessageType type;
     bool isHandled;
 };
 
