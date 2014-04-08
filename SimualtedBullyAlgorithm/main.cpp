@@ -70,8 +70,8 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE, PWSTR cmdLine,int cmdShow)
     cmdShow = 1;
 #pragma endregion
 
-	//enable this window to handle message defined above.
-	ChangeWindowMessageFilterEx(hwnd, MessageRouter::UNIQUE_MESSAGE_ID , MSGFLT_ALLOW, NULL);
+	
+	
 
     MSG msg = {};
 
@@ -86,11 +86,17 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE, PWSTR cmdLine,int cmdShow)
 }
 
 LRESULT CALLBACK windowProc(HWND hnwd, UINT uMsg, WPARAM wParam, LPARAM lParam)
-{ 
+{
+	std::wstring prefix = L"Coordinator ID --> ";
+	size_t size = sizeof(long long) + prefix.length() + 1;
+	wchar_t* displayMessage = new wchar_t[size];
+	memset(displayMessage,0, size);
+	wsprintf(displayMessage , L"%s%ld" , prefix.c_str() , node.getCoordinatorID());
+
     switch(uMsg)
     {
 	case WM_COPYDATA:
-		SetWindowText(hWndEdit, to_wstring(node.getCoordinatorID()).c_str());
+		SetWindowText(hWndEdit,displayMessage);
 		if(((PCOPYDATASTRUCT)(lParam))->dwData != MessageRouter::UNIQUE_MESSAGE_ID) //check the unique message ID I have sent.
 			ReplyMessage(false);
 		else

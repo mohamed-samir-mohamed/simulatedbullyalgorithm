@@ -1,10 +1,10 @@
-﻿Build started 4/8/2014 10:23:58 PM.
+﻿Build started 4/8/2014 10:44:36 PM.
      1>Project "G:\Work\samir\simulatedbullyalgorithm\SimualtedBullyAlgorithm\SimualtedBullyAlgorithm.vcxproj" on node 2 (Build target(s)).
      1>ClCompile:
-         F:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /Od /Oy- /D WIN32 /D _DEBUG /D _CONSOLE /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc110.pdb" /Gd /TP /analyze- /errorReport:prompt MessageRouter.cpp
-         MessageRouter.cpp
-     1>g:\work\samir\simulatedbullyalgorithm\simualtedbullyalgorithm\messageinterfaces.h(5): warning C4099: 'Message' : type name first seen using 'struct' now seen using 'class'
-                 g:\work\samir\simulatedbullyalgorithm\simualtedbullyalgorithm\message.h(7) : see declaration of 'Message'
+         F:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /Od /Oy- /D WIN32 /D _DEBUG /D _CONSOLE /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc110.pdb" /Gd /TP /analyze- /errorReport:prompt main.cpp
+         main.cpp
+     1>g:\work\samir\simulatedbullyalgorithm\simualtedbullyalgorithm\message.h(7): warning C4099: 'Message' : type name first seen using 'class' now seen using 'struct'
+                 g:\work\samir\simulatedbullyalgorithm\simualtedbullyalgorithm\messageinterfaces.h(5) : see declaration of 'Message'
        Link:
          F:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"G:\Work\samir\simulatedbullyalgorithm\Debug\BullyAlgorithmProcess.exe" /INCREMENTAL /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"G:\Work\samir\simulatedbullyalgorithm\Debug\BullyAlgorithmProcess.pdb" /SUBSYSTEM:WINDOWS /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"G:\Work\samir\simulatedbullyalgorithm\Debug\BullyAlgorithmProcess.lib" /MACHINE:X86 Debug\ElectableNode.obj
          Debug\main.obj
@@ -15,4 +15,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:01.19
+Time Elapsed 00:00:01.28
