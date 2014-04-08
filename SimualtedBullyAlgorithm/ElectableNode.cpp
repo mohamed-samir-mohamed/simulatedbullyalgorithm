@@ -103,6 +103,7 @@ void ElectableNode::handleMessage( Message fMessage )
         //if I was checking the coordinator and he respond with message I am still alive
         //then my state will be none.
         mCurrentState = NONE;
+		mCoordinatorID = fMessage.senderID;
         break;
     }
 }
@@ -165,7 +166,7 @@ void ElectableNode::checkCoordinator()
     //this method called every time stamp interval to check coordinator.
     mCurrentState = CHECKING_COORINATOR;
     Message message(Message::I_AM_JUST_CHECKING_COORDINATOR, mID);
-    mMessageRouter->broadCastMessage(message);
+    mMessageRouter->sendMessageTo(message, mCoordinatorID);
 }
 
 ID ElectableNode::getCoordinatorID() const

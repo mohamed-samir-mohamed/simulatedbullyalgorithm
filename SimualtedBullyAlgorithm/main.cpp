@@ -110,10 +110,14 @@ LRESULT CALLBACK windowProc(HWND hnwd, UINT uMsg, WPARAM wParam, LPARAM lParam)
         }
         return 0;
     }
-    if (uMsg == MessageRouter::UNIQUE_MESSAGE_ID)
+    if (uMsg == WM_COPYDATA)
     {
         SetWindowText(hWndEdit, to_wstring(node.getCoordinatorID()).c_str());
-        ReplyMessage(OnCopyData(hnwd, (HWND) wParam, reinterpret_cast<PCOPYDATASTRUCT>(lParam)));
+		if(((PCOPYDATASTRUCT)(lParam))->dwData != MessageRouter::UNIQUE_MESSAGE_ID)
+			ReplyMessage(false);
+		else
+			ReplyMessage(OnCopyData(hnwd, (HWND) wParam, (PCOPYDATASTRUCT)(lParam)));
+		return 0;
     }
 
     return DefWindowProc(hnwd,uMsg,wParam,lParam);
@@ -122,7 +126,6 @@ LRESULT CALLBACK windowProc(HWND hnwd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 BOOL OnCopyData(HWND hWnd, HWND hwndFrom, PCOPYDATASTRUCT pcds)
 {
     Message receivedMessage;
-	//memcpy_s(&receivedMessage, sizeof(receivedMessage), pcds->lpData, pcds->cbData);
 	receivedMessage = *((Message*) pcds->lpData);
 	node.handleMessage(receivedMessage);
 	return true;

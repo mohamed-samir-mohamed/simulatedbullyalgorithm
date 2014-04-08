@@ -11,7 +11,6 @@ using namespace std;
 MessageRouter::MessageRouter()
 {
 	MessageToBeSent = new Message();
-	mCopyStructure = new COPYDATASTRUCT();
 }
 
 void MessageRouter::broadCastMessage( Message fMessage )
@@ -25,12 +24,12 @@ void MessageRouter::broadCastMessage( Message fMessage )
     MessageToBeSent->isHandled = fMessage.isHandled;
 
     //prepare copy structure to send through WinAPI.
-    mCopyStructure->cbData = sizeof(Message);
-    mCopyStructure->lpData = MessageToBeSent;
+	mCopyStructure.dwData = UNIQUE_MESSAGE_ID;
+	mCopyStructure.cbData = sizeof(Message);
+    mCopyStructure.lpData = MessageToBeSent;
 
     //broadcast this message to all windows with my unique created ID through RegisterWindowMessage
-    SendMessage(HWND_BROADCAST, UNIQUE_MESSAGE_ID, (WPARAM)(Hwnd), (LPARAM) ( (LPVOID) mCopyStructure));
-
+    SendMessage(HWND_BROADCAST, WM_COPYDATA, (WPARAM)(Hwnd), (LPARAM)(LPVOID)&mCopyStructure);
     //the problem here access denied may be returned try run as administrator. 
     DWORD dwError = GetLastError();
 
@@ -52,10 +51,11 @@ void MessageRouter::sendMessageTo( Message fMessage, ID fRecieverID )
     HWND hTargetWnd = FindWindow(NULL, to_wstring(fRecieverID).c_str());
     if (hTargetWnd != NULL)
     {
-        mCopyStructure->cbData = sizeof(Message);
-        mCopyStructure->lpData = MessageToBeSent;
+		mCopyStructure.dwData = UNIQUE_MESSAGE_ID;
+        mCopyStructure.cbData = sizeof(Message);
+        mCopyStructure.lpData = MessageToBeSent;
 
-        SendMessage(hTargetWnd, UNIQUE_MESSAGE_ID, (WPARAM)(Hwnd), (LPARAM)(mCopyStructure));
+        SendMessage(hTargetWnd, WM_COPYDATA , (WPARAM)(Hwnd), (LPARAM)(LPVOID)&mCopyStructure);
 
         DWORD dwError = GetLastError();
 
@@ -67,7 +67,6 @@ void MessageRouter::sendMessageTo( Message fMessage, ID fRecieverID )
 MessageRouter::~MessageRouter()
 {
 	delete MessageToBeSent;
-    delete mCopyStructure;
 }
 
 HWND MessageRouter::Hwnd;

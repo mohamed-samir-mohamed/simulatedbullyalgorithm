@@ -24,7 +24,7 @@ public:
 	void sendMessageTo( Message fMessage, ID fRecieverID);
 
 	Message* MessageToBeSent;// message to be sent.
-	PCOPYDATASTRUCT mCopyStructure;//structure to be sent.
+	COPYDATASTRUCT mCopyStructure;//structure to be sent.
 
 	static HWND Hwnd;//handle for the main window of this process
 	static UINT UNIQUE_MESSAGE_ID;//unique ID for communicating between processes -- throw RegisterWindowMessage() method.
