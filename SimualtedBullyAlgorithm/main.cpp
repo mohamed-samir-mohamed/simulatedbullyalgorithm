@@ -89,6 +89,15 @@ LRESULT CALLBACK windowProc(HWND hnwd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 { 
     switch(uMsg)
     {
+	case WM_COPYDATA:
+		SetWindowText(hWndEdit, to_wstring(node.getCoordinatorID()).c_str());
+		if(((PCOPYDATASTRUCT)(lParam))->dwData != MessageRouter::UNIQUE_MESSAGE_ID) //check the unique message ID I have sent.
+			ReplyMessage(false);
+		else
+			ReplyMessage(OnCopyData(hnwd, (HWND) wParam, (PCOPYDATASTRUCT)(lParam)));
+		return 0;
+
+		break;
     case WM_DESTROY:
         PostQuitMessage(0);
         exit(0);
@@ -109,15 +118,6 @@ LRESULT CALLBACK windowProc(HWND hnwd, UINT uMsg, WPARAM wParam, LPARAM lParam)
                 DestroyWindow(hnwd);
         }
         return 0;
-    }
-    if (uMsg == WM_COPYDATA)
-    {
-        SetWindowText(hWndEdit, to_wstring(node.getCoordinatorID()).c_str());
-		if(((PCOPYDATASTRUCT)(lParam))->dwData != MessageRouter::UNIQUE_MESSAGE_ID)
-			ReplyMessage(false);
-		else
-			ReplyMessage(OnCopyData(hnwd, (HWND) wParam, (PCOPYDATASTRUCT)(lParam)));
-		return 0;
     }
 
     return DefWindowProc(hnwd,uMsg,wParam,lParam);
